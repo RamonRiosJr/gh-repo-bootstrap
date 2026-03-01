@@ -1,0 +1,46 @@
+name: Validate Toolkit Scripts
+
+on:
+    push:
+        branches: [main, master]
+    pull_request:
+        branches: [main, master]
+
+jobs:
+    validate-powershell:
+        name: Lint PowerShell Scripts
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Install PSScriptAnalyzer
+              shell: pwsh
+              run: Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+            - name: Run PSScriptAnalyzer
+              shell: pwsh
+              run: |
+                  $results = Invoke-ScriptAnalyzer -Path ./scripts -Recurse
+                  if ($results) {
+                    $results | Format-Table -Property Severity, ScriptName, Line, Message -Wrap
+                    $errors = $results | Where-Object { $_.Severity -eq 'Error' }
+                    if ($errors) { exit 1 }
+                  }
+
+    validate-bash:
+        name: Lint Bash Scripts
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Run ShellCheck
+              uses: ludeeus/action-shellcheck@master
+              with:
+                  scandir: "./scripts"
+
+    validate-yaml:
+        name: Lint YAML Templates
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Run Actionlint
+              uses: docker://rhysd/actionlint:latest
+              with:
+                  args: -color

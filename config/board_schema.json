@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Declarative schema for gh-repo-bootstrap GitHub Projects V2 board automation",
+  "version": "1.0.0",
+
+  "board": {
+    "name": "Engineering Backlog",
+    "description": "Enterprise-grade project board with automated classification",
+    "columns": [
+      { "name": "🧊 Backlog",      "description": "Items not yet planned for a sprint" },
+      { "name": "🎯 Sprint Ready", "description": "Groomed and ready to be picked up" },
+      { "name": "🚧 In Progress",  "description": "Actively being worked on" },
+      { "name": "👀 In Review",    "description": "PR open and awaiting review" },
+      { "name": "✅ Deployed",     "description": "Merged and deployed to production" }
+    ]
+  },
+
+  "fields": [
+    {
+      "name": "Priority",
+      "type": "SINGLE_SELECT",
+      "options": [
+        { "name": "P0: Critical", "color": "RED",    "description": "Outage / blocker — work stops NOW" },
+        { "name": "P1: High",     "color": "YELLOW", "description": "Must ship this sprint" },
+        { "name": "P2: Medium",   "color": "BLUE",   "description": "Target next sprint" },
+        { "name": "P3: Low",      "color": "GRAY",   "description": "Nice to have / future consideration" }
+      ]
+    },
+    {
+      "name": "Epic",
+      "type": "SINGLE_SELECT",
+      "options": [
+        { "name": "Compliance",     "color": "PURPLE", "description": "Regulatory and audit requirements" },
+        { "name": "Security",       "color": "RED",    "description": "Authentication, encryption, CVEs" },
+        { "name": "Infrastructure", "color": "GRAY",   "description": "CI/CD, DevOps, platform tooling" },
+        { "name": "UI/UX",          "color": "PINK",   "description": "Frontend, design system, accessibility" },
+        { "name": "AI/ML",          "color": "BLUE",   "description": "Machine learning, model integration" },
+        { "name": "Integrations",   "color": "GREEN",  "description": "Third-party API integrations" }
+      ]
+    },
+    {
+      "name": "Size",
+      "type": "SINGLE_SELECT",
+      "options": [
+        { "name": "S",  "color": "GREEN",  "description": "≤ 4 hours — trivial change" },
+        { "name": "M",  "color": "BLUE",   "description": "≤ 1 day — standard ticket" },
+        { "name": "L",  "color": "YELLOW", "description": "≤ 3 days — complex ticket" },
+        { "name": "XL", "color": "RED",    "description": "> 3 days — should be broken down" }
+      ]
+    }
+  ],
+
+  "classification_rules": {
+    "description": "Regex keyword rules applied in order to classify board items. First match wins per field.",
+    "priority": [
+      {
+        "value": "P0: Critical",
+        "keywords": ["critical", "outage", "p0", "urgent", "emergency", "incident", "hotfix", "production down"]
+      },
+      {
+        "value": "P1: High",
+        "keywords": ["p1", "high priority", "high-priority", "blocker", "blocked", "security", "compliance", "audit", "vulnerability", "cve"]
+      },
+      {
+        "value": "P2: Medium",
+        "keywords": ["p2", "medium", "enhancement", "feature", "improve"]
+      },
+      {
+        "value": "P3: Low",
+        "keywords": ["p3", "low", "nice to have", "minor", "tweak", "cleanup", "chore", "refactor", "docs", "documentation"]
+      }
+    ],
+    "epic": [
+      {
+        "value": "Compliance",
+        "keywords": ["compliance", "hipaa", "gdpr", "audit", "soc2", "sox", "regulatory", "policy"]
+      },
+      {
+        "value": "Security",
+        "keywords": ["security", "auth", "authentication", "authorization", "encrypt", "vulnerability", "cve", "pentest", "zero-trust"]
+      },
+      {
+        "value": "Infrastructure",
+        "keywords": ["infrastructure", "ci", "cd", "pipeline", "docker", "kubernetes", "k8s", "terraform", "deploy", "devops", "infra", "monitoring", "logging"]
+      },
+      {
+        "value": "AI/ML",
+        "keywords": ["ai", "ml", "model", "llm", "openai", "langchain", "embedding", "vector", "inference", "training"]
+      },
+      {
+        "value": "Integrations",
+        "keywords": ["integration", "api", "webhook", "stripe", "supabase", "vercel", "twilio", "sendgrid", "oauth", "third-party"]
+      },
+      {
+        "value": "UI/UX",
+        "keywords": ["ui", "ux", "frontend", "design", "component", "accessibility", "a11y", "layout", "style", "css", "responsive"]
+      }
+    ],
+    "size": [
+      {
+        "value": "XL",
+        "keywords": ["epic", "large", "xl", "multi-day", "refactor", "migration", "overhaul", "rewrite"]
+      },
+      {
+        "value": "L",
+        "keywords": ["large", "complex", "l:", "size: l", "multi-step"]
+      },
+      {
+        "value": "S",
+        "keywords": ["small", "trivial", "typo", "minor", "quick", "s:", "size: s", "one-liner"]
+      },
+      {
+        "value": "M",
+        "keywords": []
+      }
+    ],
+    "defaults": {
+      "priority": "P2: Medium",
+      "epic": "Infrastructure",
+      "size": "M"
+    }
+  },
+
+  "api_notes": {
+    "workflow_automations": "As of 2024, GitHub Projects V2 workflow automations (auto-move cards on PR merge, issue close, etc.) cannot be configured via the REST or GraphQL API. They must be enabled manually via the GitHub UI under Project → Settings → Workflows. This is a documented API limitation.",
+    "graphql_mutations": "All GraphQL mutations must use string concatenation rather than PowerShell interpolation to avoid quoting conflicts with double-quoted GQL field names.",
+    "reserved_variables": "Never use $PID in PowerShell scripts. It is a reserved automatic variable. Use $PROJ_ID for project IDs."
+  }
+}
