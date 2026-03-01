@@ -185,3 +185,10 @@ git push origin v1.1.0
 ---
 
 *Thank you for making gh-repo-bootstrap better for everyone!* 🚀
+
+---
+
+**GitHub:** [github.com/RamonRiosJr](https://github.com/RamonRiosJr) &nbsp;|&nbsp;
+**LinkedIn:** [linkedin.com/in/ramon-rios-a8ba3035](https://www.linkedin.com/in/ramon-rios-a8ba3035) &nbsp;|&nbsp;
+**Blog:** [ramonrios.net](https://ramonrios.net) &nbsp;|&nbsp;
+**Coqui Cloud Dev Co.:** [coqui.cloud](https://coqui.cloud)

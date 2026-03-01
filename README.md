@@ -132,6 +132,7 @@ You'll see an interactive menu:
 **API:** `POST /user/repos` or `POST /orgs/{org}/repos`
 
 **Behavior:**
+
 - Creates repo as **private** by default (configurable via `$env:REPO_VISIBILITY`)
 - Auto-initializes with a README, MIT license, and language-specific `.gitignore`
 - Configures `has_issues: true`, `has_projects: true`, `has_wiki: false`
@@ -156,6 +157,7 @@ You'll see an interactive menu:
 **API:** `PUT /repos/{owner}/{repo}/branches/{branch}/protection`
 
 **Enforces on both `main` and `master`:**
+
 - ✅ 1 required PR review
 - ✅ Stale review dismissal on new commits
 - ✅ Required status check: `Enterprise CI Pipeline / Quality Gate`
@@ -183,6 +185,7 @@ Deletes all 9 default GitHub labels and replaces them with a 27-label enterprise
 **API:** GitHub GraphQL API v4
 
 **Creates:**
+
 - Board columns: 🧊 Backlog · 🎯 Sprint Ready · 🚧 In Progress · 👀 In Review · ✅ Deployed
 - Custom Single Select fields: **Priority**, **Epic**, **Size**
 - Auto-classifies all existing items (Issues, PRs, Draft Issues) using regex keyword matching
@@ -209,6 +212,7 @@ Copies the following from `templates/ci/` into `.github/workflows/` of the targe
 **API:** `PUT /repos/{owner}/{repo}/actions/secrets/{name}` with libsodium encryption
 
 **Prompts for:**
+
 - `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY`
 
@@ -219,6 +223,7 @@ Secrets left blank are skipped. A checklist is printed at the end.
 ### `07_templates` — Community Health Files
 
 Copies into the target repo:
+
 - `.github/PULL_REQUEST_TEMPLATE.md`
 - `.github/ISSUE_TEMPLATE/bug_report.yml`
 - `.github/ISSUE_TEMPLATE/feature_request.yml`
@@ -230,6 +235,7 @@ Copies into the target repo:
 ### `08_dependabot` — Automated Dependency Updates
 
 Writes `.github/dependabot.yml` with:
+
 - `npm` packages — weekly, target `master`, minor/patch grouped
 - `github-actions` — weekly
 - `docker` — weekly
@@ -291,5 +297,10 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 ---
 
 <div align="center">
-Built with ❤️ by Platform Engineers who got tired of clicking buttons.
+Built with ❤️ by Platform Engineers who got tired of clicking buttons.<br><br>
+
+**GitHub:** [github.com/RamonRiosJr](https://github.com/RamonRiosJr) &nbsp;|&nbsp;
+**LinkedIn:** [linkedin.com/in/ramon-rios-a8ba3035](https://www.linkedin.com/in/ramon-rios-a8ba3035) &nbsp;|&nbsp;
+**Blog:** [ramonrios.net](https://ramonrios.net) &nbsp;|&nbsp;
+**Coqui Cloud Dev Co.:** [coqui.cloud](https://coqui.cloud)
 </div>
