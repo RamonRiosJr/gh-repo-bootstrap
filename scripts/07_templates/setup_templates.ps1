@@ -67,26 +67,32 @@ function Push-RepoFile {
     }
     catch {}
 
-    $body = @{ message = $CommitMsg; content = $encoded; branch = 'main' }
-    if ($existingSha) { $body['sha'] = $existingSha }
+    $body = @{ content = $encoded; branch = 'main' }
+    if ($existingSha) {
+        $body['message'] = "chore: update $RepoPath via gh-repo-bootstrap"
+        $body['sha'] = $existingSha
+    }
+    else {
+        $body['message'] = $CommitMsg
+    }
 
     Invoke-RestMethod -Uri $uri -Method PUT -Headers $headers `
         -Body ($body | ConvertTo-Json -Depth 5) -ContentType 'application/json' | Out-Null
 
-    return if ($existingSha) { 'updated' } else { 'created' }
+    if ($existingSha) { return 'updated' } else { return 'created' }
 }
 
 # ─── File Manifest ────────────────────────────────────────────────────────────
 
 # Each entry: [localRelativePath, repoDestinationPath]
 $MANIFEST = @(
-    @('PULL_REQUEST_TEMPLATE.md', '.github/PULL_REQUEST_TEMPLATE.md')
-    @('ISSUE_TEMPLATE/bug_report.yml', '.github/ISSUE_TEMPLATE/bug_report.yml')
-    @('ISSUE_TEMPLATE/feature_request.yml', '.github/ISSUE_TEMPLATE/feature_request.yml')
-    @('ISSUE_TEMPLATE/compliance_task.yml', '.github/ISSUE_TEMPLATE/compliance_task.yml')
-    @('CONTRIBUTING.md', 'CONTRIBUTING.md')
-    @('CODE_OF_CONDUCT.md', 'CODE_OF_CONDUCT.md')
-    @('SECURITY.md', 'SECURITY.md')
+    @{ local = 'PULL_REQUEST_TEMPLATE.md'; repo = '.github/PULL_REQUEST_TEMPLATE.md' }
+    @{ local = 'ISSUE_TEMPLATE/bug_report.yml'; repo = '.github/ISSUE_TEMPLATE/bug_report.yml' }
+    @{ local = 'ISSUE_TEMPLATE/feature_request.yml'; repo = '.github/ISSUE_TEMPLATE/feature_request.yml' }
+    @{ local = 'ISSUE_TEMPLATE/compliance_task.yml'; repo = '.github/ISSUE_TEMPLATE/compliance_task.yml' }
+    @{ local = 'CONTRIBUTING.md'; repo = 'CONTRIBUTING.md' }
+    @{ local = 'CODE_OF_CONDUCT.md'; repo = 'CODE_OF_CONDUCT.md' }
+    @{ local = 'SECURITY.md'; repo = 'SECURITY.md' }
 )
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
@@ -101,8 +107,8 @@ $stats = @{ created = 0; skipped = 0; errors = 0 }
 $templatesDir = Join-Path $PSScriptRoot '..\..\templates\github'
 
 foreach ($entry in $MANIFEST) {
-    $localPath = Join-Path $templatesDir $entry[0]
-    $repoPath = $entry[1]
+    $localPath = Join-Path $templatesDir $entry.local
+    $repoPath = $entry.repo
 
     if (-not (Test-Path $localPath)) {
         Write-Host "  ⚠️  Template not found: $localPath — skipping." -ForegroundColor Yellow

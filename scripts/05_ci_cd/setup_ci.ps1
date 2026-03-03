@@ -64,8 +64,10 @@ function Push-FileToRepo {
     }
     catch {}
 
+    $message = if ($existingSha) { "ci: update $RemotePath via gh-repo-bootstrap" } else { "ci: add $RemotePath via gh-repo-bootstrap" }
+    
     $body = @{
-        message = if ($existingSha) { "ci: update $RemotePath via gh-repo-bootstrap" } else { "ci: add $RemotePath via gh-repo-bootstrap" }
+        message = $message
         content = $encoded
         branch  = 'main'
     }
@@ -74,7 +76,7 @@ function Push-FileToRepo {
     Invoke-RestMethod -Uri $uri -Method PUT -Headers $headers `
         -Body ($body | ConvertTo-Json -Depth 5) -ContentType 'application/json' | Out-Null
 
-    return if ($existingSha) { 'updated' } else { 'created' }
+    if ($existingSha) { return 'updated' } else { return 'created' }
 }
 
 # ─── Main ─────────────────────────────────────────────────────────────────────

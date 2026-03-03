@@ -99,7 +99,7 @@ function Set-BranchProtection {
             required_approving_review_count = 1
             require_last_push_approval      = $false
         }
-        restrictions                     = $null
+        restrictions                     = @{ users = @(); teams = @(); apps = @() }
         allow_force_pushes               = $false
         allow_deletions                  = $false
         block_creations                  = $false
@@ -112,6 +112,26 @@ function Set-BranchProtection {
         return 'created'
     }
     catch {
+        $errMsg = $_.Exception.Message
+        if ($errMsg -match "Only organization repositories can have") {
+            try {
+                $protectionBody.Remove('restrictions')
+                Invoke-GitHubAPI -Uri $uri -Method 'PUT' -Body $protectionBody -Token $Token | Out-Null
+                Write-Host "  ✅ Branch protection set on '$Branch' (Personal Repo Mode)" -ForegroundColor Green
+                return 'created'
+            }
+            catch {
+                Write-Host "  ❌ Failed to set protection on '$Branch' (Personal Repo Mode): $_" -ForegroundColor Red
+                return 'error'
+            }
+        }
+        
+        # 404 is already handled by the first GET check, but if we somehow hit it here or hit another 422:
+        if ($errMsg -match '404') {
+            Write-Host "  ⏭️  Branch '$Branch' not found or not accessible." -ForegroundColor Yellow
+            return 'skipped'
+        }
+
         Write-Host "  ❌ Failed to set protection on '$Branch': $_" -ForegroundColor Red
         return 'error'
     }

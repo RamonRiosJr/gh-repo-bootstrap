@@ -25,42 +25,49 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 function Write-Header {
-    param([string]$Title)
-    Write-Host ""; Write-Host "═══════════════════════════════════════" -ForegroundColor Cyan
-    Write-Host "  $Title" -ForegroundColor Cyan; Write-Host "═══════════════════════════════════════" -ForegroundColor Cyan
+  param([string]$Title)
+  Write-Host ""; Write-Host "═══════════════════════════════════════" -ForegroundColor Cyan
+  Write-Host "  $Title" -ForegroundColor Cyan; Write-Host "═══════════════════════════════════════" -ForegroundColor Cyan
 }
 
 function Get-Credential-Env {
-    param([string]$EnvName, [string]$Prompt, [switch]$Secret)
-    $val = [System.Environment]::GetEnvironmentVariable($EnvName)
-    if (-not $val) {
-        if ($Secret) {
-            $secure = Read-Host -Prompt $Prompt -AsSecureString
-            $val = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto(
-                [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure))
-        }
-        else { $val = Read-Host -Prompt $Prompt }
+  param([string]$EnvName, [string]$Prompt, [switch]$Secret)
+  $val = [System.Environment]::GetEnvironmentVariable($EnvName)
+  if (-not $val) {
+    if ($Secret) {
+      $secure = Read-Host -Prompt $Prompt -AsSecureString
+      $val = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto(
+        [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure))
     }
-    return $val
+    else { $val = Read-Host -Prompt $Prompt }
+  }
+  return $val
 }
 
 function Push-RepoFile {
-    param([string]$Owner, [string]$Repo, [string]$RepoPath, [string]$Content, [string]$CommitMsg, [string]$Token, [string]$Branch = 'main')
+  param([string]$Owner, [string]$Repo, [string]$RepoPath, [string]$Content, [string]$CommitMsg, [string]$Token, [string]$Branch = 'main')
 
-    $encoded = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($Content))
-    $uri = "https://api.github.com/repos/$Owner/$Repo/contents/$RepoPath"
-    $headers = @{
-        'Authorization' = "Bearer $Token"; 'Accept' = 'application/vnd.github+json'
-        'X-GitHub-Api-Version' = '2022-11-28'
-    }
-    $existingSha = $null
-    try { $existingSha = (Invoke-RestMethod -Uri $uri -Method GET -Headers $headers).sha } catch {}
+  $encoded = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($Content))
+  $uri = "https://api.github.com/repos/$Owner/$Repo/contents/$RepoPath"
+  $headers = @{
+    'Authorization' = "Bearer $Token"; 'Accept' = 'application/vnd.github+json'
+    'X-GitHub-Api-Version' = '2022-11-28'
+  }
+  $existingSha = $null
+  try { $existingSha = (Invoke-RestMethod -Uri $uri -Method GET -Headers $headers).sha } catch {}
 
-    $body = @{ message = $CommitMsg; content = $encoded; branch = $Branch }
-    if ($existingSha) { $body['sha'] = $existingSha }
-    Invoke-RestMethod -Uri $uri -Method PUT -Headers $headers `
-        -Body ($body | ConvertTo-Json -Depth 5) -ContentType 'application/json' | Out-Null
-    return if ($existingSha) { 'updated' } else { 'created' }
+  $body = @{ content = $encoded; branch = $Branch }
+  if ($existingSha) {
+    $body['message'] = "chore: update dependabot.yml via gh-repo-bootstrap"
+    $body['sha'] = $existingSha
+  }
+  else {
+    $body['message'] = "chore: add dependabot.yml via gh-repo-bootstrap"
+  }
+    
+  Invoke-RestMethod -Uri $uri -Method PUT -Headers $headers `
+    -Body ($body | ConvertTo-Json -Depth 5) -ContentType 'application/json' | Out-Null
+  if ($existingSha) { return 'updated' } else { return 'created' }
 }
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
@@ -155,17 +162,17 @@ updates:
 
 Write-Host "  → Writing .github/dependabot.yml..." -ForegroundColor Gray
 try {
-    $result = Push-RepoFile -Owner $OWNER -Repo $REPO_NAME -RepoPath '.github/dependabot.yml' `
-        -Content $dependabotContent -CommitMsg 'chore: add dependabot config via gh-repo-bootstrap' -Token $TOKEN
-    if ($result -eq 'created') {
-        Write-Host "  ✅ Created: .github/dependabot.yml" -ForegroundColor Green; $stats.created++
-    }
-    else {
-        Write-Host "  ⏭️  Updated: .github/dependabot.yml" -ForegroundColor Yellow; $stats.skipped++
-    }
+  $result = Push-RepoFile -Owner $OWNER -Repo $REPO_NAME -RepoPath '.github/dependabot.yml' `
+    -Content $dependabotContent -CommitMsg 'chore: add dependabot config via gh-repo-bootstrap' -Token $TOKEN
+  if ($result -eq 'created') {
+    Write-Host "  ✅ Created: .github/dependabot.yml" -ForegroundColor Green; $stats.created++
+  }
+  else {
+    Write-Host "  ⏭️  Updated: .github/dependabot.yml" -ForegroundColor Yellow; $stats.skipped++
+  }
 }
 catch {
-    Write-Host "  ❌ Failed: $_" -ForegroundColor Red; $stats.errors++
+  Write-Host "  ❌ Failed: $_" -ForegroundColor Red; $stats.errors++
 }
 
 Write-Host ""; Write-Host "─── Summary ─────────────────────────────" -ForegroundColor DarkGray
