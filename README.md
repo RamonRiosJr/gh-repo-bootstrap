@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![CI](https://github.com/YOUR_ORG/gh-repo-bootstrap/actions/workflows/validate.yml/badge.svg)
+[![CI](https://github.com/RamonRiosJr/gh-repo-bootstrap/actions/workflows/validate.yml/badge.svg)](https://github.com/RamonRiosJr/gh-repo-bootstrap/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PowerShell 7+](https://img.shields.io/badge/PowerShell-7%2B-blue?logo=powershell)](https://github.com/PowerShell/PowerShell)
 [![GitHub GraphQL API](https://img.shields.io/badge/GitHub-GraphQL%20API-e10098?logo=graphql)](https://docs.github.com/en/graphql)
