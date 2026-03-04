@@ -2,6 +2,23 @@
 # ==============================================================================
 # setup_labels.sh — Creates enterprise label taxonomy
 # Part of gh-repo-bootstrap | Version: 1.0.0
+#
+# SYNOPSIS
+#   Configures professional issue and PR labels.
+#
+# DESCRIPTION
+#   Deletes the 9 default GitHub labels (bug, enhancement, etc) and creates a
+#   comprehensive 27-label taxonomy organized by Type, Priority, Epic, Status,
+#   and Size with standardized hex colors.
+#
+# ENVIRONMENT VARIABLES
+#   GITHUB_TOKEN  - PAT with 'repo' scope
+#   GITHUB_OWNER  - GitHub username or organization name
+#   REPO_NAME     - Target repository name
+#
+# NOTES
+#   Idempotent: safely updates existing labels if names conflict.
+#   See OPERATIONS_MANUAL.md for exhaustive operation instructions.
 # ==============================================================================
 set -euo pipefail
 

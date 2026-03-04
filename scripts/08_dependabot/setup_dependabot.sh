@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
+# ==============================================================================
 # setup_dependabot.sh — Writes dependabot.yml to target repo
 # Part of gh-repo-bootstrap | Version: 1.0.0
+#
+# SYNOPSIS
+#   Automates dependency management via GitHub Dependabot.
+#
+# DESCRIPTION
+#   Creates `.github/dependabot.yml` configured for weakly updates against
+#   npm, GitHub Actions, and Docker. Applies custom labels and commit prefixes
+#   to all automated pull requests to maintain a clean git history.
+#
+# ENVIRONMENT VARIABLES
+#   GITHUB_TOKEN   - PAT with 'repo' scope
+#   GITHUB_OWNER   - GitHub username or organization name
+#   REPO_NAME      - Target repository name
+#   TARGET_BRANCH  - Default branch to target updates (default: 'master')
+#
+# NOTES
+#   Idempotent operation. See OPERATIONS_MANUAL.md for additional details.
+# ==============================================================================
 set -euo pipefail
 
 for dep in curl jq base64; do

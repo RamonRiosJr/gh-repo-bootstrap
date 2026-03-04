@@ -1,7 +1,26 @@
 #!/usr/bin/env bash
+# ==============================================================================
 # setup_secrets.sh — Sets GitHub Actions secrets
 # Part of gh-repo-bootstrap | Version: 1.0.0
 # Uses gh CLI for encryption (handles libsodium natively)
+#
+# SYNOPSIS
+#   Interactively configures encrypted GitHub Actions secrets.
+#
+# DESCRIPTION
+#   Prompts the user for sensitive deployment secrets (e.g. VERCEL_TOKEN,
+#   SUPABASE_URL) and securely encrypts them using the 'gh' CLI before
+#   uploading them to the repository's action secrets.
+#
+# ENVIRONMENT VARIABLES
+#   GITHUB_TOKEN  - PAT with 'repo' scope
+#   GITHUB_OWNER  - GitHub username or organization name
+#   REPO_NAME     - Target repository name
+#
+# NOTES
+#   Leaves secrets unchanged if skipped (by pressing Enter).
+#   See OPERATIONS_MANUAL.md for vast instructions on operation.
+# ==============================================================================
 set -euo pipefail
 
 for dep in curl jq; do

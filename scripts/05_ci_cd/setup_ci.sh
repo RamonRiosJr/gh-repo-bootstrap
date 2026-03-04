@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
+# ==============================================================================
 # setup_ci.sh — Deploys CI/CD templates into target repo
 # Part of gh-repo-bootstrap | Version: 1.0.0
+#
+# SYNOPSIS
+#   Copies enterprise CI/CD workflows into the repository.
+#
+# DESCRIPTION
+#   Reads all .yml files from `templates/ci/` and pushes them to
+#   `.github/workflows/` in the target repository using the GitHub API.
+#   Includes standard CI checks, preview deployments, and lighthouse audits.
+#
+# ENVIRONMENT VARIABLES
+#   GITHUB_TOKEN  - PAT with 'repo' scope
+#   GITHUB_OWNER  - GitHub username or organization name
+#   REPO_NAME     - Target repository name
+#
+# NOTES
+#   Idempotent: will update existing workflows if they already exist.
+#   See OPERATIONS_MANUAL.md for vast instructions on operation.
+# ==============================================================================
 set -euo pipefail
 
 for dep in curl jq base64; do

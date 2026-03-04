@@ -2,6 +2,23 @@
 # ==============================================================================
 # 00_run_all.sh — Master orchestrator for gh-repo-bootstrap
 # Part of gh-repo-bootstrap | Version: 1.0.0
+#
+# SYNOPSIS
+#   Master orchestrator for executing all repository setup scripts.
+#
+# DESCRIPTION
+#   Provides an interactive menu to run any combination of the 9 automation
+#   scripts in sequence. Collects credentials once at startup and passes them
+#   to all sub-scripts via environment variables. Prints a final pass/fail
+#   summary table at the end.
+#
+# ENVIRONMENT VARIABLES
+#   GITHUB_TOKEN  - GitHub PAT (prompted once if not set)
+#   GITHUB_OWNER  - GitHub username or organization name
+#   REPO_NAME     - Target repository name
+#
+# NOTES
+#   For exhaustive instructions and troubleshooting, see OPERATIONS_MANUAL.md
 # ==============================================================================
 set -euo pipefail
 

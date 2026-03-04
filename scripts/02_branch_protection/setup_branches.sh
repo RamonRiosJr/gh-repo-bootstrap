@@ -1,8 +1,24 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # setup_branches.sh — Sets up branch protection rules on main and master
-# Part of gh-repo-bootstrap
-# Version: 1.0.0
+# Part of gh-repo-bootstrap | Version: 1.0.0
+#
+# SYNOPSIS
+#   Secures the default branches with pull request requirements and status checks.
+#
+# DESCRIPTION
+#   Applies branch protection rules to 'main' and 'master'. Requires exactly
+#   1 approving review, dismisses stale reviews on push, blocks force pushes,
+#   requires conversation resolution, and mandates status checks from CI.
+#
+# ENVIRONMENT VARIABLES
+#   GITHUB_TOKEN  - PAT with 'repo' and 'admin:repo_hook' scope
+#   GITHUB_OWNER  - GitHub username or organization name
+#   REPO_NAME     - Target repository name
+#
+# NOTES
+#   Idempotent: updates existing rules or creates new ones. Skips if branch
+#   does not exist. See OPERATIONS_MANUAL.md for vast instructions.
 # ==============================================================================
 set -euo pipefail
 
