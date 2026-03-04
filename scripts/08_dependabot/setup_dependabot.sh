@@ -106,8 +106,11 @@ echo "  → Writing .github/dependabot.yml..."
 if curl -sf -X PUT -H "Authorization: Bearer $GITHUB_TOKEN" \
   -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" \
   -d "$BODY" "$URI" > /dev/null; then
-  [[ -n "$SHA" ]] && { echo "  ⏭️  Updated: .github/dependabot.yml"; SKIPPED=$((SKIPPED+1)); } \
-                  || { echo "  ✅ Created: .github/dependabot.yml"; CREATED=$((CREATED+1)); }
+  if [[ -n "$SHA" ]]; then
+    echo "  ⏭️  Updated: .github/dependabot.yml"; SKIPPED=$((SKIPPED+1))
+  else
+    echo "  ✅ Created: .github/dependabot.yml"; CREATED=$((CREATED+1))
+  fi
 else
   echo "  ❌ Failed to write dependabot.yml"; ERRORS=$((ERRORS+1))
 fi
@@ -116,4 +119,4 @@ echo ""; echo "─── Summary ───────────────�
 echo "  ✅ Created : ${CREATED}"
 echo "  ⏭️  Updated : ${SKIPPED}"
 echo "  ❌ Errors  : ${ERRORS}"; echo ""
-[[ "$ERRORS" -gt 0 ]] && exit 1 || exit 0
+if [[ "$ERRORS" -gt 0 ]]; then exit 1; else exit 0; fi

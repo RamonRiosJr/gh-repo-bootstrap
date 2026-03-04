@@ -71,8 +71,11 @@ push_file() {
     -H "Accept: application/vnd.github+json" \
     -H "Content-Type: application/json" \
     -d "$body" "$uri" > /dev/null; then
-    [[ -n "$sha" ]] && { echo "  ⏭️  Updated: .github/workflows/${remote_name}"; SKIPPED=$((SKIPPED+1)); } \
-                    || { echo "  ✅ Created: .github/workflows/${remote_name}"; CREATED=$((CREATED+1)); }
+    if [[ -n "$sha" ]]; then
+      echo "  ⏭️  Updated: .github/workflows/${remote_name}"; SKIPPED=$((SKIPPED+1))
+    else
+      echo "  ✅ Created: .github/workflows/${remote_name}"; CREATED=$((CREATED+1))
+    fi
   else
     echo "  ❌ Failed: ${remote_name}"; ERRORS=$((ERRORS+1))
   fi
@@ -87,4 +90,4 @@ echo ""; echo "─── Summary ───────────────�
 echo "  ✅ Created : ${CREATED}"
 echo "  ⏭️  Updated : ${SKIPPED}"
 echo "  ❌ Errors  : ${ERRORS}"; echo ""
-[[ "$ERRORS" -gt 0 ]] && exit 1 || exit 0
+if [[ "$ERRORS" -gt 0 ]]; then exit 1; else exit 0; fi

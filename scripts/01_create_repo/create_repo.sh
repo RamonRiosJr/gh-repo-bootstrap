@@ -149,4 +149,4 @@ echo "  ⏭️  Skipped : ${SKIPPED}"
 echo "  ❌ Errors  : ${ERRORS}"
 echo ""
 
-[[ "$ERRORS" -gt 0 ]] && exit 1 || exit 0
+if [[ "$ERRORS" -gt 0 ]]; then exit 1; else exit 0; fi
