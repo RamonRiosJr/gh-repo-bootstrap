@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
+# ==============================================================================
 # setup_templates.sh — Deploys community health files
 # Part of gh-repo-bootstrap | Version: 1.0.0
+#
+# SYNOPSIS
+#   Copies issue templates, PR templates, and community guides.
+#
+# DESCRIPTION
+#   Deploys standard GitHub community health files (CONTRIBUTING, SECURITY,
+#   CODE_OF_CONDUCT) and highly structured issue/PR templates from the local
+#   `templates/github/` directory to the target repository.
+#
+# ENVIRONMENT VARIABLES
+#   GITHUB_TOKEN  - PAT with 'repo' scope
+#   GITHUB_OWNER  - GitHub username or organization name
+#   REPO_NAME     - Target repository name
+#
+# NOTES
+#   Idempotent: gracefully updates files if they already exist.
+#   See OPERATIONS_MANUAL.md for vast instructions on templates customization.
+# ==============================================================================
 set -euo pipefail
 
 for dep in curl jq base64; do
@@ -43,8 +62,11 @@ push_file() {
   if curl -sf -X PUT -H "Authorization: Bearer $GITHUB_TOKEN" \
     -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" \
     -d "$body" "$uri" > /dev/null; then
-    [[ -n "$sha" ]] && { echo "  ⏭️  Updated: ${repo_path}"; SKIPPED=$((SKIPPED+1)); } \
-                    || { echo "  ✅ Created: ${repo_path}"; CREATED=$((CREATED+1)); }
+    if [[ -n "$sha" ]]; then
+      echo "  ⏭️  Updated: ${repo_path}"; SKIPPED=$((SKIPPED+1))
+    else
+      echo "  ✅ Created: ${repo_path}"; CREATED=$((CREATED+1))
+    fi
   else
     echo "  ❌ Failed: ${repo_path}"; ERRORS=$((ERRORS+1))
   fi
@@ -62,4 +84,4 @@ echo ""; echo "─── Summary ───────────────�
 echo "  ✅ Created : ${CREATED}"
 echo "  ⏭️  Updated : ${SKIPPED}"
 echo "  ❌ Errors  : ${ERRORS}"; echo ""
-[[ "$ERRORS" -gt 0 ]] && exit 1 || exit 0
+if [[ "$ERRORS" -gt 0 ]]; then exit 1; else exit 0; fi

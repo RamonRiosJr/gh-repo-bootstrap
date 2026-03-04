@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
+# ==============================================================================
 # setup_ci.sh — Deploys CI/CD templates into target repo
 # Part of gh-repo-bootstrap | Version: 1.0.0
+#
+# SYNOPSIS
+#   Copies enterprise CI/CD workflows into the repository.
+#
+# DESCRIPTION
+#   Reads all .yml files from `templates/ci/` and pushes them to
+#   `.github/workflows/` in the target repository using the GitHub API.
+#   Includes standard CI checks, preview deployments, and lighthouse audits.
+#
+# ENVIRONMENT VARIABLES
+#   GITHUB_TOKEN  - PAT with 'repo' scope
+#   GITHUB_OWNER  - GitHub username or organization name
+#   REPO_NAME     - Target repository name
+#
+# NOTES
+#   Idempotent: will update existing workflows if they already exist.
+#   See OPERATIONS_MANUAL.md for vast instructions on operation.
+# ==============================================================================
 set -euo pipefail
 
 for dep in curl jq base64; do
@@ -52,8 +71,11 @@ push_file() {
     -H "Accept: application/vnd.github+json" \
     -H "Content-Type: application/json" \
     -d "$body" "$uri" > /dev/null; then
-    [[ -n "$sha" ]] && { echo "  ⏭️  Updated: .github/workflows/${remote_name}"; SKIPPED=$((SKIPPED+1)); } \
-                    || { echo "  ✅ Created: .github/workflows/${remote_name}"; CREATED=$((CREATED+1)); }
+    if [[ -n "$sha" ]]; then
+      echo "  ⏭️  Updated: .github/workflows/${remote_name}"; SKIPPED=$((SKIPPED+1))
+    else
+      echo "  ✅ Created: .github/workflows/${remote_name}"; CREATED=$((CREATED+1))
+    fi
   else
     echo "  ❌ Failed: ${remote_name}"; ERRORS=$((ERRORS+1))
   fi
@@ -68,4 +90,4 @@ echo ""; echo "─── Summary ───────────────�
 echo "  ✅ Created : ${CREATED}"
 echo "  ⏭️  Updated : ${SKIPPED}"
 echo "  ❌ Errors  : ${ERRORS}"; echo ""
-[[ "$ERRORS" -gt 0 ]] && exit 1 || exit 0
+if [[ "$ERRORS" -gt 0 ]]; then exit 1; else exit 0; fi

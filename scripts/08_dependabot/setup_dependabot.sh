@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
+# ==============================================================================
 # setup_dependabot.sh — Writes dependabot.yml to target repo
 # Part of gh-repo-bootstrap | Version: 1.0.0
+#
+# SYNOPSIS
+#   Automates dependency management via GitHub Dependabot.
+#
+# DESCRIPTION
+#   Creates `.github/dependabot.yml` configured for weakly updates against
+#   npm, GitHub Actions, and Docker. Applies custom labels and commit prefixes
+#   to all automated pull requests to maintain a clean git history.
+#
+# ENVIRONMENT VARIABLES
+#   GITHUB_TOKEN   - PAT with 'repo' scope
+#   GITHUB_OWNER   - GitHub username or organization name
+#   REPO_NAME      - Target repository name
+#   TARGET_BRANCH  - Default branch to target updates (default: 'master')
+#
+# NOTES
+#   Idempotent operation. See OPERATIONS_MANUAL.md for additional details.
+# ==============================================================================
 set -euo pipefail
 
 for dep in curl jq base64; do
@@ -87,8 +106,11 @@ echo "  → Writing .github/dependabot.yml..."
 if curl -sf -X PUT -H "Authorization: Bearer $GITHUB_TOKEN" \
   -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" \
   -d "$BODY" "$URI" > /dev/null; then
-  [[ -n "$SHA" ]] && { echo "  ⏭️  Updated: .github/dependabot.yml"; SKIPPED=$((SKIPPED+1)); } \
-                  || { echo "  ✅ Created: .github/dependabot.yml"; CREATED=$((CREATED+1)); }
+  if [[ -n "$SHA" ]]; then
+    echo "  ⏭️  Updated: .github/dependabot.yml"; SKIPPED=$((SKIPPED+1))
+  else
+    echo "  ✅ Created: .github/dependabot.yml"; CREATED=$((CREATED+1))
+  fi
 else
   echo "  ❌ Failed to write dependabot.yml"; ERRORS=$((ERRORS+1))
 fi
@@ -97,4 +119,4 @@ echo ""; echo "─── Summary ───────────────�
 echo "  ✅ Created : ${CREATED}"
 echo "  ⏭️  Updated : ${SKIPPED}"
 echo "  ❌ Errors  : ${ERRORS}"; echo ""
-[[ "$ERRORS" -gt 0 ]] && exit 1 || exit 0
+if [[ "$ERRORS" -gt 0 ]]; then exit 1; else exit 0; fi

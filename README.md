@@ -13,7 +13,7 @@
 **A complete, production-ready GitHub Repository Automation Toolkit.**  
 Clone once. Run once. Get an enterprise-grade repository in minutes.
 
-[Quick Start](#-quick-start) · [Script Reference](#-script-reference) · [Design Decisions](#-design-decisions) · [Contributing](CONTRIBUTING.md)
+[Quick Start](#-quick-start) · [Script Reference](#-script-reference) · [Operations Manual](OPERATIONS_MANUAL.md) · [Design Decisions](#-design-decisions) · [Contributing](CONTRIBUTING.md)
 
 </div>
 

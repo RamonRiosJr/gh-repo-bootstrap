@@ -1,8 +1,28 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # create_repo.sh — Creates a new GitHub repository with enterprise defaults
-# Part of gh-repo-bootstrap
-# Version: 1.0.0
+# Part of gh-repo-bootstrap | Version: 1.0.0
+#
+# SYNOPSIS
+#   Creates a new GitHub repository with best-practice defaults.
+#
+# DESCRIPTION
+#   Uses the GitHub REST API to create a new repository under a user account
+#   or organization. Applies sensible enterprise defaults: private, auto-initialized
+#   with README and MIT license, issues enabled, wiki disabled.
+#
+# ENVIRONMENT VARIABLES
+#   GITHUB_TOKEN       - PAT with 'repo' scope
+#   GITHUB_OWNER       - GitHub username or organization name
+#   REPO_NAME          - Repository name to create
+#   REPO_VISIBILITY    - 'private' (default) or 'public'
+#   REPO_DESCRIPTION   - Short description of the repository
+#   REPO_HOMEPAGE      - Homepage URL (optional)
+#   REPO_GITIGNORE     - .gitignore template name (default: Node)
+#
+# NOTES
+#   Idempotent: if the repository already exists, script skips creation.
+#   For exhaustive instructions, see OPERATIONS_MANUAL.md
 # ==============================================================================
 set -euo pipefail
 
@@ -129,4 +149,4 @@ echo "  ⏭️  Skipped : ${SKIPPED}"
 echo "  ❌ Errors  : ${ERRORS}"
 echo ""
 
-[[ "$ERRORS" -gt 0 ]] && exit 1 || exit 0
+if [[ "$ERRORS" -gt 0 ]]; then exit 1; else exit 0; fi

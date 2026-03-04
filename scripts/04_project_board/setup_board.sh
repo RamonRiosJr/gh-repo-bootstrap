@@ -2,7 +2,22 @@
 # ==============================================================================
 # setup_board.sh — Creates GitHub Projects V2 board with custom fields
 # Part of gh-repo-bootstrap | Version: 1.0.0
-# Uses $PROJ_ID (NOT $PID — reserved variable). All GQL via string concat.
+#
+# SYNOPSIS
+#   Scaffolds an organization or user-level GitHub Projects V2 board.
+#
+# DESCRIPTION
+#   Creates a new Project Board using the GraphQL API. Configures custom single-
+#   select fields (Priority, Epic, Size) matching the standard label taxonomy.
+#
+# ENVIRONMENT VARIABLES
+#   GITHUB_TOKEN  - PAT with 'project' scope
+#   GITHUB_OWNER  - GitHub username or organization name
+#   BOARD_NAME    - Name of the project board (default: 'Engineering Backlog')
+#
+# NOTES
+#   Uses $PROJ_ID (NOT $PID — reserved variable). All GQL via string concat.
+#   Idempotent: skips if board of same name exists. See OPERATIONS_MANUAL.md.
 # ==============================================================================
 set -euo pipefail
 
@@ -86,4 +101,4 @@ echo "  ✅ Created : ${CREATED}"
 echo "  ⏭️  Skipped : ${SKIPPED}"
 echo "  🏷️  Tagged  : ${TAGGED}"
 echo "  ❌ Errors  : ${ERRORS}"; echo ""
-[[ "$ERRORS" -gt 0 ]] && exit 1 || exit 0
+if [[ "$ERRORS" -gt 0 ]]; then exit 1; else exit 0; fi

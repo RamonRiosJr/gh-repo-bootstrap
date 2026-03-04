@@ -1,6 +1,27 @@
 #!/usr/bin/env bash
+# ==============================================================================
 # setup_meta.sh — Updates repo description, homepage, and topics
 # Part of gh-repo-bootstrap | Version: 1.0.0
+#
+# SYNOPSIS
+#   Configures repository metadata for better discoverability.
+#
+# DESCRIPTION
+#   Updates the GitHub repository's description, homepage URL, and applies
+#   topic tags (e.g., 'react, typescript, ui'). Topics are normalized to
+#   kebab-case arrays before submission.
+#
+# ENVIRONMENT VARIABLES
+#   GITHUB_TOKEN      - PAT with 'repo' scope
+#   GITHUB_OWNER      - GitHub username or organization name
+#   REPO_NAME         - Target repository name
+#   REPO_DESCRIPTION  - Summary of the project
+#   REPO_HOMEPAGE     - Production/docs URL (optional)
+#   REPO_TOPICS       - Comma-separated list of tags (optional)
+#
+# NOTES
+#   See OPERATIONS_MANUAL.md for instructions and troubleshooting.
+# ==============================================================================
 set -euo pipefail
 
 for dep in curl jq; do
@@ -64,4 +85,4 @@ echo ""; echo "─── Summary ───────────────�
 echo "  ✅ Created : ${CREATED}"
 echo "  ⏭️  Skipped : ${SKIPPED}"
 echo "  ❌ Errors  : ${ERRORS}"; echo ""
-[[ "$ERRORS" -gt 0 ]] && exit 1 || exit 0
+if [[ "$ERRORS" -gt 0 ]]; then exit 1; else exit 0; fi
