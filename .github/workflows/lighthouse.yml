@@ -24,9 +24,9 @@ jobs:
         id: url
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "target=${{ github.event.inputs.url }}" >> $GITHUB_OUTPUT
+            echo 'target=${{ github.event.inputs.url }}' >> "$GITHUB_OUTPUT"
           else
-            echo "target=${{ github.event.deployment_status.target_url }}" >> $GITHUB_OUTPUT
+            echo 'target=${{ github.event.deployment_status.target_url }}' >> "$GITHUB_OUTPUT"
           fi
 
       - name: Run Lighthouse audit
