@@ -1,4 +1,4 @@
-# gh-repo-bootstrap
+# Github Repo Bootstrap - gh-repo-bootstrap
 
 <div align="center">
 
